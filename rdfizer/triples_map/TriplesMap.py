@@ -24,7 +24,8 @@ class TriplesMap:
 
 		self.triples_map_id = triples_map_id
 		self.triples_map_name = re.compile("(#(.*?))$").search(str(self.triples_map_id)).group(0)
-		self.data_source = data_source[6:] if data_source[:6] == "file//" else data_source
+		self.data_source = data_source[7:] if data_source[:7] == "file://" else data_source
+		print(self.data_source)
 		self.reference_formulation = ref_form
 		self.file_format = re.compile("(#[A-Za-z]+)$").search(str(self.reference_formulation)).group(0)[1:]
 		self.iterator = iterator

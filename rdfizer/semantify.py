@@ -13,6 +13,9 @@ try:
 except:
 	from .triples_map import TriplesMap as tm	
 
+# Work in the rr:sqlQuery (change mapping parser query, add sqlite3 support, etc)
+# Work in the "when subject is empty" thing (uuid.uuid4(), dependency graph over the ) 
+
 def mapping_parser(mapping_file):
 
 	"""
@@ -114,7 +117,6 @@ def mapping_parser(mapping_file):
 	triples_map_list = []
 
 	for result_triples_map in mapping_query_results:
-
 		triples_map_exists = False
 		for triples_map in triples_map_list:
 			triples_map_exists = triples_map_exists or (str(triples_map.triples_map_id) == str(result_triples_map.triples_map_id))
@@ -212,7 +214,8 @@ def string_substitution(string, pattern, row, term):
 		elif pattern == ".+":
 			match = reference_match.group(0)
 			if re.search("^[\s|\t]*$", row[match]) is None:
-				new_string = "\"" + new_string[:start] + row[match].strip() + new_string[end:] + "\""
+				new_string = new_string[:start] + row[match].strip() + new_string[end:]
+				new_string = "\"" + new_string + "\"" if new_string[0] != "\"" and new_string[-1] != "\"" else new_string
 			else:
 				return None
 		else:
@@ -303,7 +306,6 @@ def semantify_csv(triples_map, triples_map_list, delimiter, output_file_descript
 									object = "<" + string_substitution(triples_map_element.subject_map.value, "{(.+?)}", row, "object") + ">"
 								except TypeError:
 									object = None
-
 							break
 						else:
 							continue
@@ -311,7 +313,7 @@ def semantify_csv(triples_map, triples_map_list, delimiter, output_file_descript
 					print("Invalid object mapping type")
 					print("Aborting...")
 					sys.exit(1)
-				
+
 				if object is not None and predicate_object_map.object_map.datatype is not None:
 					object += "^^<{}>".format(predicate_object_map.object_map.datatype)
 
